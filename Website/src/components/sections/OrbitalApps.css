@@ -1,0 +1,652 @@
+/* Monitor Apps Container */
+.monitor-apps-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    /* Adjust based on image aspect ratio and layout */
+    height: auto;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.monitor-frame {
+    width: 100%;
+    height: auto;
+    display: block;
+    position: relative;
+    z-index: 1;
+    /* Monitor frame on bottom (or top if transparent screen?) */
+    /* If the screen area is transparent in the PNG, icons can be behind. 
+       If screen is white in PNG, icons must be on top. 
+       Assuming icons on top. */
+}
+
+.monitor-screen-area {
+    position: absolute;
+    top: 4.5%;
+    left: 4.5%;
+    width: 91%;
+    height: 68%;
+    z-index: 2;
+    overflow: visible;
+    /* background-color: #ffffff; Removed as per request */
+    border-radius: 2px;
+}
+
+/* Header Text inside Monitor */
+.monitor-header-text {
+    position: absolute;
+    top: 25px;
+    /* Moved down slightly to give breathing room */
+    width: 100%;
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+    font-style: italic;
+    font-weight: bold;
+    color: #002B5B;
+    /* Deep Navy Blue */
+    font-size: 1.5rem;
+    /* Larger size */
+    z-index: 5;
+    pointer-events: none;
+    text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.1);
+}
+
+/* App Icon Floating Items */
+.monitor-icon-item {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+    will-change: transform;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    opacity: 0;
+}
+
+.monitor-icon-item::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 120%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(5, 80, 54, 0.15) 0%, transparent 70%);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.monitor-icon-item:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.monitor-icon-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.15));
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-style: preserve-3d;
+}
+
+.monitor-icon-item:hover {
+    transform: translate(-50%, -50%) scale(1.25) translateZ(20px) !important;
+    z-index: 10;
+}
+
+.monitor-icon-item:hover img {
+    filter: drop-shadow(0px 8px 16px rgba(5, 80, 54, 0.4)) brightness(1.1);
+    animation: icon-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Advanced Floating Animations with 3D Effects */
+@keyframes float-1 {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) translate(0, 0) rotateY(0deg) rotateX(0deg);
+    }
+
+    25% {
+        transform: translate(-50%, -50%) translate(8px, -12px) rotateY(5deg) rotateX(-3deg);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) translate(-6px, -18px) rotateY(-5deg) rotateX(3deg);
+    }
+
+    75% {
+        transform: translate(-50%, -50%) translate(12px, 8px) rotateY(3deg) rotateX(-2deg);
+    }
+}
+
+@keyframes float-2 {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) translate(0, 0) rotateY(0deg) rotateX(0deg);
+    }
+
+    25% {
+        transform: translate(-50%, -50%) translate(-10px, -8px) rotateY(-5deg) rotateX(3deg);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) translate(14px, 4px) rotateY(5deg) rotateX(-3deg);
+    }
+
+    75% {
+        transform: translate(-50%, -50%) translate(-8px, 12px) rotateY(-3deg) rotateX(2deg);
+    }
+}
+
+@keyframes float-3 {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) translate(0, 0) rotateY(0deg) rotateX(0deg);
+    }
+
+    25% {
+        transform: translate(-50%, -50%) translate(6px, 14px) rotateY(3deg) rotateX(5deg);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) translate(-12px, -4px) rotateY(-5deg) rotateX(-3deg);
+    }
+
+    75% {
+        transform: translate(-50%, -50%) translate(8px, -10px) rotateY(4deg) rotateX(2deg);
+    }
+}
+
+@keyframes float-4 {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) translate(0, 0) rotateY(0deg) scale(1);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) translate(0px, -18px) rotateY(8deg) scale(1.05);
+    }
+}
+
+/* Orbital Rotation Animation */
+@keyframes orbit-rotate {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg) translateX(0px) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg) translateX(0px) rotate(-360deg);
+    }
+}
+
+/* Breathing/Pulse Animation */
+@keyframes breathe {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.08);
+        opacity: 0.9;
+    }
+}
+
+/* Pulse Ring for Center Icon */
+@keyframes pulse-ring {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(5, 80, 54, 0.7);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 0.95;
+        box-shadow: 0 0 0 10px rgba(5, 80, 54, 0);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(5, 80, 54, 0);
+    }
+}
+
+/* Glow Pulse Effect */
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+}
+
+/* Shimmer Effect */
+@keyframes icon-shimmer {
+    0% {
+        filter: drop-shadow(0px 8px 16px rgba(5, 80, 54, 0.4)) brightness(1.1);
+    }
+
+    50% {
+        filter: drop-shadow(0px 8px 20px rgba(5, 80, 54, 0.6)) brightness(1.2);
+    }
+
+    100% {
+        filter: drop-shadow(0px 8px 16px rgba(5, 80, 54, 0.4)) brightness(1.1);
+    }
+}
+
+/* Magnetic Hover Effect */
+@keyframes magnetic-pull {
+    0% {
+        transform: translate(-50%, -50%) translate(0, 0);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) translate(var(--mouse-x, 0), var(--mouse-y, 0));
+    }
+}
+
+/* Entrance Animation */
+@keyframes fade-in-scale {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3) rotate(-180deg);
+    }
+
+    60% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1.1) rotate(10deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+}
+
+/* Wobble Effect */
+@keyframes wobble {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    25% {
+        transform: translate(-50%, -50%) rotate(-3deg);
+    }
+
+    75% {
+        transform: translate(-50%, -50%) rotate(3deg);
+    }
+}
+
+/* Spin and Float Combined */
+@keyframes spin-float {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) translate(0, 0) rotate(0deg);
+    }
+
+    25% {
+        transform: translate(-50%, -50%) translate(10px, -15px) rotate(90deg);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) translate(-5px, -20px) rotate(180deg);
+    }
+
+    75% {
+        transform: translate(-50%, -50%) translate(-10px, 10px) rotate(270deg);
+    }
+}
+
+/* Elastic Bounce */
+@keyframes elastic-bounce {
+
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    30% {
+        transform: translate(-50%, -50%) scale(1.15);
+    }
+
+    60% {
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+
+    80% {
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+}
+
+/* Staggered entrance delays - applied via inline styles in component */
+
+/* Magnetic hover effect enhancement */
+.monitor-icon-item:hover {
+    animation-play-state: paused;
+}
+
+.monitor-icon-item:hover::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    height: 150%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(5, 80, 54, 0.1) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    animation: ripple 1s ease-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes ripple {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Enhanced 3D perspective on container */
+.monitor-screen-area {
+    perspective: 1200px;
+    transform-style: preserve-3d;
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .monitor-apps-container {
+        width: 100%;
+        max-width: 450px;
+    }
+
+    .monitor-icon-item {
+        width: 35px;
+        height: 35px;
+    }
+
+    /* Reduce animation intensity on mobile */
+    /* Reduce animation intensity on mobile */
+    @keyframes float-1 {
+
+        0%,
+        100% {
+            transform: translate(-50%, -50%) translate(0, 0);
+        }
+
+        50% {
+            transform: translate(-50%, -50%) translate(5px, -8px);
+        }
+    }
+
+    @keyframes float-2 {
+
+        0%,
+        100% {
+            transform: translate(-50%, -50%) translate(0, 0);
+        }
+
+        50% {
+            transform: translate(-50%, -50%) translate(5px, -8px);
+        }
+    }
+
+    @keyframes float-3 {
+
+        0%,
+        100% {
+            transform: translate(-50%, -50%) translate(0, 0);
+        }
+
+        50% {
+            transform: translate(-50%, -50%) translate(5px, -8px);
+        }
+    }
+
+    @keyframes float-4 {
+
+        0%,
+        100% {
+            transform: translate(-50%, -50%) translate(0, 0);
+        }
+
+        50% {
+            transform: translate(-50%, -50%) translate(5px, -8px);
+        }
+    }
+}
+
+/* Electric Current Beam Animation */
+.electric-beam {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: beam-flow 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 2px rgba(5, 80, 54, 0.8));
+}
+
+@keyframes beam-flow {
+    0% {
+        stroke-dashoffset: 100;
+        /* Hidden at start */
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    70% {
+        stroke-dashoffset: 0;
+        /* Fully expanded to target */
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 0;
+        /* Fade out after hitting */
+    }
+
+    100% {
+        stroke-dashoffset: 0;
+        opacity: 0;
+    }
+}
+
+/* Icon Blow/Shock Animation */
+@keyframes icon-blow {
+
+    0%,
+    65% {
+        transform: scale(1);
+        filter: brightness(1) drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.15));
+    }
+
+    70% {
+        transform: scale(1.4) rotate(5deg);
+        /* Blow up */
+        filter: brightness(1.5) drop-shadow(0 0 15px rgba(5, 255, 150, 0.6));
+        /* Bright flash */
+    }
+
+    75% {
+        transform: scale(0.9) rotate(-5deg);
+        /* Recoil */
+    }
+
+    80% {
+        transform: scale(1.1);
+    }
+
+    85% {
+        transform: scale(1);
+        filter: brightness(1) drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.15));
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Planet Rotation Layout */
+.orbit-container {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    /* Increased to fit outer ring (440px + icons) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: visible;
+    /* Prevent clipping of outer icons */
+    margin-top: -30px;
+    margin-bottom: 20px;
+}
+
+.orbit-center {
+    position: absolute;
+    z-index: 10;
+    width: 80px;
+    height: 80px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(45, 130, 183, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.orbit-ring {
+    position: absolute;
+    border: 1px solid rgba(45, 130, 183, 0.6);
+    /* Light blue border */
+    border-radius: 50%;
+    pointer-events: none;
+    /* Let clicks pass through */
+}
+
+.orbit-ring-inner {
+    width: 200px;
+    height: 200px;
+    animation: orbit-rotate-cw 20s linear infinite;
+}
+
+.orbit-ring-middle {
+    width: 320px;
+    height: 320px;
+    animation: orbit-rotate-ccw 25s linear infinite;
+}
+
+.orbit-ring-outer {
+    width: 440px;
+    height: 440px;
+    animation: orbit-rotate-cw 30s linear infinite;
+}
+
+.orbit-icon-wrapper {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    /* Center the icon on the ring line */
+    margin-left: -20px;
+    margin-top: -20px;
+}
+
+/* Counter-rotate icons to keep them upright */
+.orbit-ring-inner .orbit-icon-wrapper {
+    animation: orbit-rotate-ccw 20s linear infinite;
+}
+
+.orbit-ring-middle .orbit-icon-wrapper {
+    animation: orbit-rotate-cw 25s linear infinite;
+}
+
+.orbit-ring-outer .orbit-icon-wrapper {
+    animation: orbit-rotate-ccw 30s linear infinite;
+}
+
+@keyframes orbit-rotate-cw {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes orbit-rotate-ccw {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(-360deg);
+    }
+}
+
+/* Responsive Scaling for Orbit */
+@media (max-width: 992px) {
+    .orbit-container {
+        height: 400px;
+        transform: scale(0.85);
+        /* Scale down slightly for tablets/small laptops */
+        margin-top: -40px;
+        margin-bottom: 0px;
+    }
+}
+
+@media (max-width: 768px) {
+    .orbit-container {
+        height: 350px;
+        transform: scale(0.65);
+        /* Scale down significantly for mobile */
+        margin-top: -80px;
+        margin-bottom: -60px;
+        /* Reduce gap */
+    }
+}
+
+@media (max-width: 480px) {
+    .orbit-container {
+        height: 300px;
+        transform: scale(0.5);
+        /* Further scale for very small screens */
+        margin-top: -120px;
+        margin-bottom: -100px;
+    }
+}
