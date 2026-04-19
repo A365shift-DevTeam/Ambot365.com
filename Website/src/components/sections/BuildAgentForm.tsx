@@ -178,8 +178,8 @@ export default function BuildAgentForm() {
                         const nextValue = e.target.value.replace(/[^\d+]/g, '');
                         handleFieldChange('mobileNumber', nextValue);
                       }}
-                      type="number"
-                      inputMode="numeric"
+                      type="tel"
+                      inputMode="tel"
                       required
                       placeholder="+919876543210"
                       className={inputClassName(formErrors.mobileNumber)}

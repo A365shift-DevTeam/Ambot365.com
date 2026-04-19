@@ -1,6 +1,5 @@
 using A365Shift.Api.Models;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 namespace A365Shift.Api.Data;
 
