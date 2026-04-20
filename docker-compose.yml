@@ -1,0 +1,54 @@
+services:
+  web:
+    build:
+      context: ./Website
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ""
+    depends_on:
+      - api
+      - contact
+    ports:
+      - "8087:80"
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./Backend
+      dockerfile: A365Shift.Api/Dockerfile
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=a365shift_db;Username=postgres;Password=postgres;Timeout=5;Command Timeout=5"
+      Cors__AllowedOrigins__0: "http://localhost:8087"
+      Cors__AllowedOrigins__1: "https://ambot365.com"
+      Cors__AllowedOrigins__2: "https://www.ambot365.com"
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+  contact:
+    build:
+      context: ./Website
+      dockerfile: Dockerfile.contact
+    environment:
+      SMTP_HOST: "${SMTP_HOST:-smtp.gmail.com}"
+      SMTP_USER: "${SMTP_USER:-a365shift@gmail.com}"
+      SMTP_PASS: "${SMTP_PASS:-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}"
+      PORT: 5000
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: a365shift_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+      - a365shift-postgres-data:/var/lib/postgresql/data
+      - ./Database/init:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+
+volumes:
+  a365shift-postgres-data:
