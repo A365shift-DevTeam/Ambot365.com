@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: a365shift_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -21,7 +21,7 @@ services:
       dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=a365shift_db;Username=postgres;Password=${DB_PASSWORD:-postgres}"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=a365shift_db;Username=postgres;Password=${DB_PASSWORD}"
     depends_on:
       postgres:
         condition: service_healthy
@@ -32,8 +32,12 @@ services:
     build:
       context: ./Website
       dockerfile: Dockerfile.email
-    env_file:
-      - .env
+    environment:
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      PORT: 5000
     networks:
       - app_network
 
@@ -43,7 +47,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_BASE_URL: ""
-        GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+        GEMINI_API_KEY: ${GEMINI_API_KEY}
     ports:
       - "8087:80"
     depends_on:
