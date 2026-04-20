@@ -1,0 +1,53 @@
+services:
+  web:
+    build:
+      context: ./Website
+      args:
+        VITE_API_BASE_URL: /api-proxy
+    ports:
+      - "8080:5000"
+    environment:
+      PORT: 5000
+      API_BASE_URL: http://api:8080
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+    depends_on:
+      api:
+        condition: service_started
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./Backend
+      dockerfile: A365Shift.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=${POSTGRES_DB:-a365shift_db};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres};Timeout=5;Command Timeout=5
+      Cors__AllowedOrigins__0: http://localhost:8080
+      Cors__AllowedOrigins__1: ${PUBLIC_ORIGIN:-http://localhost:8080}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-a365shift_db}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./a365shift_db.backup:/docker-entrypoint-initdb.d/a365shift_db.backup:ro
+      - ./docker/postgres/restore-backup.sh:/docker-entrypoint-initdb.d/restore-backup.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
