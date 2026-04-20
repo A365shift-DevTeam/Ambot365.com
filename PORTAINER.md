@@ -74,6 +74,7 @@ extra_hosts:
 
 - The database backup restores only when the Postgres volume is empty.
 - If you need to restore the backup again, remove the stack volume named like `<stack>_postgres_data` and redeploy.
-- The website calls the .NET API through `/api-proxy`, so users only need access to the website URL.
+- The website calls the .NET API through same-origin `/api/...` routes, so users only need access to the website URL.
+- `/api/contact` is handled by the website container. Other `/api/...` routes are forwarded to the .NET API container.
 - The direct .NET API container is internal to Docker unless you add a public port mapping.
 - A `504 Gateway Time-out` from Nginx usually means Nginx is pointing at the wrong upstream host/port or cannot reach the Docker network.

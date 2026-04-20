@@ -109,8 +109,8 @@ app.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok' });
 });
 
-app.use('/api-proxy', async (req, res) => {
-    const targetUrl = `${API_BASE_URL}${req.originalUrl.replace(/^\/api-proxy/, '')}`;
+async function proxyToApi(req, res, targetPath) {
+    const targetUrl = `${API_BASE_URL}${targetPath}`;
 
     try {
         const upstreamResponse = await fetch(targetUrl, {
@@ -134,6 +134,14 @@ app.use('/api-proxy', async (req, res) => {
         console.error('API proxy error:', error);
         res.status(502).json({ error: 'Backend API is unavailable' });
     }
+}
+
+app.use('/api-proxy', async (req, res) => {
+    await proxyToApi(req, res, req.originalUrl.replace(/^\/api-proxy/, ''));
+});
+
+app.use('/api', async (req, res) => {
+    await proxyToApi(req, res, req.originalUrl);
 });
 
 app.use(express.static(path.join(__dirname, 'dist')));

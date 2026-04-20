@@ -3,7 +3,7 @@ services:
     build:
       context: ./Website
       args:
-        VITE_API_BASE_URL: /api-proxy
+        VITE_API_BASE_URL: ""
     ports:
       - "${HOST_WEB_PORT:-8080}:5000"
     environment:
