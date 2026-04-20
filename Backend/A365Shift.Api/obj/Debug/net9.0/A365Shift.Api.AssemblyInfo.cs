@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("A365Shift.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+400fc9e7e88249d82ed356bb8fb61c4d49d741de")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1b476556d3fe28f014ea93f66a893cbb31a8d26c")]
 [assembly: System.Reflection.AssemblyProductAttribute("A365Shift.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("A365Shift.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
