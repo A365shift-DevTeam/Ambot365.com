@@ -1,0 +1,15 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+COPY ["NuGet.Config", "."]
+COPY ["A365Shift.Api/A365Shift.Api.csproj", "A365Shift.Api/"]
+RUN dotnet restore "A365Shift.Api/A365Shift.Api.csproj"
+COPY . .
+WORKDIR "/src/A365Shift.Api"
+RUN dotnet publish -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/publish .
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+ENTRYPOINT ["dotnet", "A365Shift.Api.dll"]

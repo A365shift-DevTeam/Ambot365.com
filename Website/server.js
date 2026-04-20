@@ -1,6 +1,6 @@
-const express = require('express');
-const net = require('net');
-const dotenv = require('dotenv');
+import express from 'express';
+import net from 'net';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -9,7 +9,6 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
-// Custom SMTP client using net module to avoid third-party libraries
 function sendMailNative({ from, to, subject, body }) {
     return new Promise((resolve, reject) => {
         const client = net.createConnection(587, process.env.SMTP_HOST || 'smtp.gmail.com', () => {

@@ -36,10 +36,10 @@ export default function BuildAgentForm() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const apiBaseUrl = useMemo(
-    () => import.meta.env.VITE_API_BASE_URL?.trim() || 'http://localhost:5036',
-    [],
-  );
+  const apiBaseUrl = useMemo(() => {
+    const v = import.meta.env.VITE_API_BASE_URL;
+    return v !== undefined && v !== null ? v.trim() : 'http://localhost:5036';
+  }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
