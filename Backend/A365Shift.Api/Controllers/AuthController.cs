@@ -3,6 +3,7 @@ using A365Shift.Api.Data;
 using A365Shift.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace A365Shift.Api.Controllers;
 
@@ -56,7 +57,21 @@ public class AuthController(AppDbContext dbContext) : ControllerBase
         };
 
         dbContext.Users.Add(user);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception) when (IsUniqueEmailViolation(exception))
+        {
+            return Conflict(new { message = "A user with this email already exists." });
+        }
+        catch (DbUpdateException)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+            {
+                message = "Registration could not be saved. Please check that the database is running and has the latest schema."
+            });
+        }
 
         var response = new RegisterResponse
         {
@@ -99,5 +114,12 @@ public class AuthController(AppDbContext dbContext) : ControllerBase
             ServiceType.WebAndMobileApp => "Web & Mobile App",
             _ => "Agents"
         };
+    }
+
+    private static bool IsUniqueEmailViolation(DbUpdateException exception)
+    {
+        return exception.InnerException is PostgresException postgresException
+            && postgresException.SqlState == PostgresErrorCodes.UniqueViolation
+            && string.Equals(postgresException.ConstraintName, "IX_Users_Email", StringComparison.Ordinal);
     }
 }
