@@ -1,8 +1,6 @@
-import dotenv from 'dotenv';
-import express from 'express';
-import net from 'net';
-import path from 'path';
-import { fileURLToPath } from 'url';
+const express = require('express');
+const net = require('net');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -10,9 +8,6 @@ const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
-const API_BASE_URL = process.env.API_BASE_URL || 'http://api:8080';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Custom SMTP client using net module to avoid third-party libraries
 function sendMailNative({ from, to, subject, body }) {
@@ -103,51 +98,6 @@ app.post('/api/contact', async (req, res) => {
         console.error('Email error:', error);
         res.status(500).json({ error: 'Failed to send email' });
     }
-});
-
-app.get('/health', (_req, res) => {
-    res.status(200).json({ status: 'ok' });
-});
-
-async function proxyToApi(req, res, targetPath) {
-    const targetUrl = `${API_BASE_URL}${targetPath}`;
-
-    try {
-        const upstreamResponse = await fetch(targetUrl, {
-            method: req.method,
-            headers: {
-                'Content-Type': req.get('Content-Type') || 'application/json',
-            },
-            body: ['GET', 'HEAD'].includes(req.method) ? undefined : JSON.stringify(req.body),
-        });
-
-        const responseText = await upstreamResponse.text();
-        res.status(upstreamResponse.status);
-
-        const contentType = upstreamResponse.headers.get('content-type');
-        if (contentType) {
-            res.setHeader('content-type', contentType);
-        }
-
-        res.send(responseText);
-    } catch (error) {
-        console.error('API proxy error:', error);
-        res.status(502).json({ error: 'Backend API is unavailable' });
-    }
-}
-
-app.use('/api-proxy', async (req, res) => {
-    await proxyToApi(req, res, req.originalUrl.replace(/^\/api-proxy/, ''));
-});
-
-app.use('/api', async (req, res) => {
-    await proxyToApi(req, res, req.originalUrl);
-});
-
-app.use(express.static(path.join(__dirname, 'dist')));
-
-app.get('*', (_req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 app.listen(PORT, () => {
