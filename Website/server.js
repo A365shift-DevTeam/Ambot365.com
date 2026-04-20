@@ -105,6 +105,10 @@ app.post('/api/contact', async (req, res) => {
     }
 });
 
+app.get('/health', (_req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
+
 app.use('/api-proxy', async (req, res) => {
     const targetUrl = `${API_BASE_URL}${req.originalUrl.replace(/^\/api-proxy/, '')}`;
 
