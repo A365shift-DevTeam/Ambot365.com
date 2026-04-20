@@ -37,7 +37,7 @@ export default function BuildAgentForm() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const apiBaseUrl = useMemo(
-    () => import.meta.env.VITE_API_BASE_URL?.trim() || '',
+    () => import.meta.env.VITE_API_BASE_URL?.trim() || 'http://localhost:5036',
     [],
   );
 

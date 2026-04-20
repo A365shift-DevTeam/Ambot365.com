@@ -1,7 +1,0 @@
-.git
-**/bin
-**/obj
-**/node_modules
-**/dist
-**/.npm-cache
-Microsoft
