@@ -1,7 +1,8 @@
-import { FormEvent, ReactNode, useMemo, useState } from 'react';
+import { FormEvent, ReactNode, useState } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Globe2, Phone, UserRound } from 'lucide-react';
 import worldMap from '../../assets/World Map.png';
+import { supabase } from '../../lib/supabase';
 
 type RegisterFormData = {
   fullName: string;
@@ -36,11 +37,6 @@ export default function BuildAgentForm() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const apiBaseUrl = useMemo(
-    () => import.meta.env.VITE_API_BASE_URL?.trim() || 'http://localhost:5036',
-    [],
-  );
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -54,43 +50,28 @@ export default function BuildAgentForm() {
     setIsSubmitting(true);
     setStatusMessage(null);
     setErrorMessage(null);
-    const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), 10000);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          fullName: formData.fullName,
-          email: formData.email,
-          mobileNumber: formData.mobileNumber,
-          serviceType: formData.selectedService,
-          projectGoal: formData.projectGoal,
-        }),
+      const { error } = await supabase.from('user_registrations').insert({
+        full_name: formData.fullName,
+        email: formData.email,
+        mobile_number: formData.mobileNumber,
+        service_type: formData.selectedService,
+        project_goal: formData.projectGoal,
       });
 
-      const payload = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        const message = payload?.message || 'Unable to submit the form right now.';
-        throw new Error(message);
+      if (error) {
+        throw new Error(error.message || 'Unable to submit the form right now.');
       }
 
       setStatusMessage('Your details are submitted. Our team will contact you shortly.');
       setFormData(INITIAL_FORM);
     } catch (error) {
-      const message = error instanceof DOMException && error.name === 'AbortError'
-        ? 'Server is taking too long. Please try again.'
-        : error instanceof Error
-          ? error.message
-          : 'Something went wrong. Please try again.';
+      const message = error instanceof Error
+        ? error.message
+        : 'Something went wrong. Please try again.';
       setErrorMessage(message);
     } finally {
-      window.clearTimeout(timeoutId);
       setIsSubmitting(false);
     }
   };
